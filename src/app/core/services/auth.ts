@@ -1,4 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+
+import { DEMO_USER } from '../mocks/auth.mock';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
@@ -7,24 +10,37 @@ import { BehaviorSubject } from 'rxjs';
 export class AuthService {
   private readonly tokenKey = 'taskflow_token';
 
+  private readonly platformId = inject(PLATFORM_ID);
+
   private readonly isAuthenticatedSubject = new BehaviorSubject<boolean>(
     this.hasToken()
   );
 
   isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
-  login(email: string, password: string): boolean {
-    if (email && password.length >= 6) {
-      localStorage.setItem(this.tokenKey, 'fake-jwt-token');
-      this.isAuthenticatedSubject.next(true);
-      return true;
-    }
+login(email: string, password: string): boolean {
+  const isValidCredentials =
+    email === DEMO_USER.email && password === DEMO_USER.password;
 
+  if (!isValidCredentials) {
+    this.isAuthenticatedSubject.next(false);
     return false;
   }
 
+  if (isPlatformBrowser(this.platformId)) {
+    localStorage.setItem(this.tokenKey, 'fake-jwt-token');
+  }
+
+  this.isAuthenticatedSubject.next(true);
+
+  return true;
+}
   logout(): void {
-    localStorage.removeItem(this.tokenKey);
+
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem(this.tokenKey);
+    }
+
     this.isAuthenticatedSubject.next(false);
   }
 
@@ -33,6 +49,11 @@ export class AuthService {
   }
 
   private hasToken(): boolean {
-    return !!localStorage.getItem(this.tokenKey);
+
+    if (isPlatformBrowser(this.platformId)) {
+      return !!localStorage.getItem(this.tokenKey);
+    }
+
+    return false;
   }
 }

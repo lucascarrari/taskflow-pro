@@ -1,5 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+
+import { AuthService } from '../../../core/services/auth';
 
 @Component({
   selector: 'app-login',
@@ -9,7 +12,10 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
   styleUrl: './login.scss'
 })
 export class Login {
-  private readonly formBuilder = new FormBuilder();
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  errorMessage = '';
 
   loginForm = this.formBuilder.group({
     email: ['', [Validators.required, Validators.email]],
@@ -22,6 +28,16 @@ export class Login {
       return;
     }
 
-    console.log(this.loginForm.value);
+    const email = this.loginForm.value.email ?? '';
+    const password = this.loginForm.value.password ?? '';
+
+    const loginSuccess = this.authService.login(email, password);
+
+    if (!loginSuccess) {
+         this.errorMessage = 'E-mail ou senha inválidos.';
+  return;
+}
+
+this.router.navigate(['/dashboard']);
   }
 }
