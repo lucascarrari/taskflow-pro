@@ -62,7 +62,7 @@
           <span>Status</span>
         </div>
 
-        @for (task of recentTasks; track task.title) {
+        @for (task of tasks$ | async; track task.id) { 
           <div class="table-row">
             <span>{{ task.title }}</span>
             <span>{{ task.project }}</span>

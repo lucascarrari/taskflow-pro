@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+
+import { TaskService } from '../../../core/services/task';
 
 interface DashboardMetric {
   label: string;
@@ -8,75 +11,46 @@ interface DashboardMetric {
   trend: string;
 }
 
-interface RecentTask {
-  title: string;
-  project: string;
-  priority: 'Baixa' | 'Média' | 'Alta';
-  status: 'Pendente' | 'Em andamento' | 'Concluída';
-}
-
 @Component({
   selector: 'app-dashboard',
   standalone: true,
+  imports: [AsyncPipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
 export class Dashboard {
+  private readonly taskService = inject(TaskService);
+
+  tasks$ = this.taskService.tasks$;
+
   metrics: DashboardMetric[] = [
     {
       label: 'Total de Projetos',
       value: '12',
       description: 'Projetos ativos no sistema',
-      icon: '📊',
-      trend: '↑ 12%'
+      icon: '📁',
+      trend: '+2 desde o último mês'
     },
     {
       label: 'Tarefas Pendentes',
       value: '34',
       description: 'Tarefas aguardando execução',
-      icon: '📋',
-      trend: '↓ 5%'
+      icon: '⏳',
+      trend: '+5 nesta semana'
     },
     {
       label: 'Tarefas Concluídas',
       value: '128',
       description: 'Tarefas finalizadas',
       icon: '✅',
-      trend: '↑ 20%'
+      trend: '+18 neste mês'
     },
     {
       label: 'Produtividade',
       value: '86%',
       description: 'Média geral da equipe',
-      icon: '⚡',
-      trend: '↑ 8%'
-    }
-  ];
-
-  recentTasks: RecentTask[] = [
-    {
-      title: 'Criar tela de login',
-      project: 'TaskFlow Pro',
-      priority: 'Alta',
-      status: 'Concluída'
-    },
-    {
-      title: 'Implementar dashboard',
-      project: 'TaskFlow Pro',
-      priority: 'Alta',
-      status: 'Em andamento'
-    },
-    {
-      title: 'Criar CRUD de projetos',
-      project: 'TaskFlow Pro',
-      priority: 'Média',
-      status: 'Pendente'
-    },
-    {
-      title: 'Configurar testes unitários',
-      project: 'Qualidade',
-      priority: 'Média',
-      status: 'Pendente'
+      icon: '📈',
+      trend: '+7% de evolução'
     }
   ];
 }
