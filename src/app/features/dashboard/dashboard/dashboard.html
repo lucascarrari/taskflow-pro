@@ -1,1 +1,80 @@
-<p>dashboard works!</p>
+<section class="dashboard">
+  <div class="metrics-grid">
+    @for (metric of metrics; track metric.label) {
+      <article class="metric-card">
+        <div class="metric-top">
+          <div class="metric-icon">{{ metric.icon }}</div>
+
+          <div>
+            <span>{{ metric.label }}</span>
+            <h2>{{ metric.value }}</h2>
+          </div>
+        </div>
+
+        <p>{{ metric.description }}</p>
+
+        <div class="metric-trend">
+          {{ metric.trend }}
+        </div>
+      </article>
+    }
+  </div>
+
+  <div class="dashboard-content">
+    <section class="panel performance-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Desempenho da equipe</h2>
+        </div>
+
+        <button type="button">Últimos 7 dias</button>
+      </div>
+
+      <div class="chart-placeholder">
+        <div class="chart-line"></div>
+        <div class="chart-labels">
+          <span>Dom</span>
+          <span>Seg</span>
+          <span>Ter</span>
+          <span>Qua</span>
+          <span>Qui</span>
+          <span>Sex</span>
+          <span>Sáb</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel tasks-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Tarefas recentes</h2>
+          <p>Acompanhe as atividades mais importantes do projeto.</p>
+        </div>
+
+        <button type="button">Ver todas</button>
+      </div>
+
+      <div class="tasks-table">
+        <div class="table-row table-head">
+          <span>Tarefa</span>
+          <span>Projeto</span>
+          <span>Prioridade</span>
+          <span>Status</span>
+        </div>
+
+        @for (task of recentTasks; track task.title) {
+          <div class="table-row">
+            <span>{{ task.title }}</span>
+            <span>{{ task.project }}</span>
+            <span>
+              <strong class="badge">{{ task.priority }}</strong>
+            </span>
+            <span>
+              <strong class="badge">{{ task.status }}</strong>
+            </span>
+          </div>
+        }
+      </div>
+    </section>
+  </div>
+</section>

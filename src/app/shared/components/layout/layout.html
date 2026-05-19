@@ -1,5 +1,8 @@
 <div class="app-layout">
-  <app-sidebar></app-sidebar>
+  <app-sidebar
+    [isCollapsed]="isSidebarCollapsed"
+    (toggleSidebar)="toggleSidebar()"
+  ></app-sidebar>
 
   <div class="main-content">
     <app-header></app-header>

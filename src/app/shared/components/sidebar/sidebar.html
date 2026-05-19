@@ -1,1 +1,61 @@
-<p>sidebar works!</p>
+<aside class="sidebar" [class.sidebar-collapsed]="isCollapsed">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      @if (!isCollapsed) {
+        <div>
+          <h2>TaskFlow</h2>
+          <span>Pro</span>
+        </div>
+      } @else {
+        <strong>TF</strong>
+      }
+    </div>
+
+    <button
+      type="button"
+      class="sidebar-toggle"
+      (click)="toggleSidebar.emit()"
+      [title]="isCollapsed ? 'Expandir menu' : 'Recolher menu'"
+    >
+      @if (isCollapsed) {
+        →
+      } @else {
+        ←
+      }
+    </button>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a routerLink="/dashboard" routerLinkActive="active" title="Dashboard">
+      <span class="menu-icon">📊</span>
+
+      @if (!isCollapsed) {
+        <span class="menu-text">Dashboard</span>
+      }
+    </a>
+
+    <a routerLink="/projects" routerLinkActive="active" title="Projetos">
+      <span class="menu-icon">📁</span>
+
+      @if (!isCollapsed) {
+        <span class="menu-text">Projetos</span>
+      }
+    </a>
+
+    <a routerLink="/tasks" routerLinkActive="active" title="Tarefas">
+      <span class="menu-icon">✅</span>
+
+      @if (!isCollapsed) {
+        <span class="menu-text">Tarefas</span>
+      }
+    </a>
+
+    <a routerLink="/kanban" routerLinkActive="active" title="Kanban">
+      <span class="menu-icon">🧩</span>
+
+      @if (!isCollapsed) {
+        <span class="menu-text">Kanban</span>
+      }
+    </a>
+  </nav>
+</aside>

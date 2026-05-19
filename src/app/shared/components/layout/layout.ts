@@ -11,4 +11,10 @@ import { Sidebar } from '../sidebar/sidebar';
   templateUrl: './layout.html',
   styleUrl: './layout.scss'
 })
-export class Layout {}
+export class Layout {
+  isSidebarCollapsed = false;
+
+  toggleSidebar(): void {
+    this.isSidebarCollapsed = !this.isSidebarCollapsed;
+  }
+}
