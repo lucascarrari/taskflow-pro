@@ -1,15 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
+import { map } from 'rxjs';
 
 import { TaskService } from '../../../core/services/task';
-
-interface DashboardMetric {
-  label: string;
-  value: string;
-  description: string;
-  icon: string;
-  trend: string;
-}
 
 @Component({
   selector: 'app-dashboard',
@@ -23,34 +16,57 @@ export class Dashboard {
 
   tasks$ = this.taskService.tasks$;
 
-  metrics: DashboardMetric[] = [
-    {
-      label: 'Total de Projetos',
-      value: '12',
-      description: 'Projetos ativos no sistema',
-      icon: '📁',
-      trend: '+2 desde o último mês'
-    },
-    {
-      label: 'Tarefas Pendentes',
-      value: '34',
-      description: 'Tarefas aguardando execução',
-      icon: '⏳',
-      trend: '+5 nesta semana'
-    },
-    {
-      label: 'Tarefas Concluídas',
-      value: '128',
-      description: 'Tarefas finalizadas',
-      icon: '✅',
-      trend: '+18 neste mês'
-    },
-    {
-      label: 'Produtividade',
-      value: '86%',
-      description: 'Média geral da equipe',
-      icon: '📈',
-      trend: '+7% de evolução'
-    }
-  ];
+  metrics$ = this.tasks$.pipe(
+    map((tasks) => {
+      const totalTasks = tasks.length;
+
+      const pendingTasks = tasks.filter(
+        (task) => task.status === 'Pendente'
+      ).length;
+
+      const completedTasks = tasks.filter(
+        (task) => task.status === 'Concluída'
+      ).length;
+
+      const productivity =
+        totalTasks > 0
+          ? Math.round((completedTasks / totalTasks) * 100)
+          : 0;
+
+      const totalProjects = new Set(
+        tasks.map((task) => task.project)
+      ).size;
+
+      return [
+        {
+          label: 'Total de Projetos',
+          value: String(totalProjects),
+          description: 'Projetos ativos no sistema',
+          icon: '📁',
+          trend: 'Calculado pelas tarefas'
+        },
+        {
+          label: 'Tarefas Pendentes',
+          value: String(pendingTasks),
+          description: 'Tarefas aguardando execução',
+          icon: '⏳',
+          trend: `${pendingTasks} pendentes agora`
+        },
+        {
+          label: 'Tarefas Concluídas',
+          value: String(completedTasks),
+          description: 'Tarefas finalizadas',
+          icon: '✅',
+          trend: `${completedTasks} concluídas`
+        },
+        {
+          label: 'Produtividade',
+          value: `${productivity}%`,
+          description: 'Média geral da equipe',
+          icon: '📈',
+          trend: `${completedTasks} de ${totalTasks} tarefas`
+        }
+      ];
+    })
+  );
 }

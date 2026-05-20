@@ -56,4 +56,22 @@ export class TaskService {
       task
     ]);
   }
+
+  deleteTask(taskId: number): void {
+
+  const updatedTasks = this.tasksSubject.value.filter(
+    (task) => task.id !== taskId
+  );
+
+  this.tasksSubject.next(updatedTasks);
+}
+
+updateTask(updatedTask: Task): void {
+  const updatedTasks = this.tasksSubject.value.map((task) =>
+    task.id === updatedTask.id ? updatedTask : task
+  );
+
+  this.tasksSubject.next(updatedTasks);
+}
+
 }

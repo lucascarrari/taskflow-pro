@@ -20,6 +20,28 @@
   --color-danger: #ef4444;
   --color-warning: #f59e0b;
 
+  /* PRIORITY COLORS */
+
+--color-priority-low-bg: rgba(34, 197, 94, 0.12);
+--color-priority-low-text: #15803d;
+
+--color-priority-medium-bg: rgba(245, 158, 11, 0.12);
+--color-priority-medium-text: #b45309;
+
+--color-priority-high-bg: rgba(239, 68, 68, 0.12);
+--color-priority-high-text: #b91c1c;
+
+/* STATUS COLORS */
+
+--color-status-pending-bg: rgba(107, 114, 128, 0.12);
+--color-status-pending-text: #4b5563;
+
+--color-status-progress-bg: rgba(37, 99, 235, 0.12);
+--color-status-progress-text: #1d4ed8;
+
+--color-status-completed-bg: rgba(34, 197, 94, 0.12);
+--color-status-completed-text: #15803d;
+
   /* BORDER RADIUS */
 
   --radius-sm: 8px;

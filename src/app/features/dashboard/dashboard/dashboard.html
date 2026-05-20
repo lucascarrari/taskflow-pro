@@ -1,6 +1,6 @@
 <section class="dashboard">
   <div class="metrics-grid">
-    @for (metric of metrics; track metric.label) {
+    @for (metric of metrics$ | async; track metric.label) {
       <article class="metric-card">
         <div class="metric-top">
           <div class="metric-icon">{{ metric.icon }}</div>
