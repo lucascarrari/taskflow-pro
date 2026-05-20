@@ -68,6 +68,46 @@
   text-align: center;
 }
 
+.kanban-card {
+  cursor: grab;
+  transition:
+    transform var(--transition-default),
+    box-shadow var(--transition-default),
+    border-color var(--transition-default);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+    border-color: var(--color-primary);
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: var(--radius-md);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
+}
+
+.cdk-drag-placeholder {
+  min-height: 96px;
+  border: 2px dashed var(--color-primary);
+  border-radius: var(--radius-md);
+  background: rgba(37, 99, 235, 0.08);
+  opacity: 1;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms ease;
+}
+
+.column-tasks.cdk-drop-list-dragging .kanban-card:not(.cdk-drag-placeholder) {
+  transition: transform 250ms ease;
+}
+
 @media (max-width: 1100px) {
   .kanban-page {
     grid-template-columns: 1fr;

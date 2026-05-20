@@ -4,18 +4,22 @@
       <h2>Pendente</h2>
     </div>
 
-    <div class="column-tasks">
+    <div class="column-tasks" cdkDropList id="pending-list" [cdkDropListData]="pendingTasks$ | async"
+      [cdkDropListConnectedTo]="[
+    'progress-list',
+    'completed-list'
+  ]" (cdkDropListDropped)="drop($event, 'Pendente')">
       @for (task of pendingTasks$ | async; track task.id) {
-        <article class="kanban-card">
-          <h3>{{ task.title }}</h3>
-          <p>{{ task.project }}</p>
+      <article class="kanban-card" cdkDrag [cdkDragData]="task.id">
+        <h3>{{ task.title }}</h3>
+        <p>{{ task.project }}</p>
 
-          <span class="badge">
-            {{ task.priority }}
-          </span>
-        </article>
+        <span class="badge">
+          {{ task.priority }}
+        </span>
+      </article>
       } @empty {
-        <p class="empty-column">Nenhuma tarefa pendente</p>
+      <p class="empty-column">Nenhuma tarefa pendente</p>
       }
     </div>
   </section>
@@ -25,18 +29,22 @@
       <h2>Em andamento</h2>
     </div>
 
-    <div class="column-tasks">
+    <div class="column-tasks" cdkDropList id="progress-list" [cdkDropListData]="inProgressTasks$ | async"
+      [cdkDropListConnectedTo]="[
+    'pending-list',
+    'completed-list'
+  ]" (cdkDropListDropped)="drop($event, 'Em andamento')">
       @for (task of inProgressTasks$ | async; track task.id) {
-        <article class="kanban-card">
-          <h3>{{ task.title }}</h3>
-          <p>{{ task.project }}</p>
+      <article class="kanban-card" cdkDrag [cdkDragData]="task.id">
+        <h3>{{ task.title }}</h3>
+        <p>{{ task.project }}</p>
 
-          <span class="badge">
-            {{ task.priority }}
-          </span>
-        </article>
+        <span class="badge">
+          {{ task.priority }}
+        </span>
+      </article>
       } @empty {
-        <p class="empty-column">Nenhuma tarefa em andamento</p>
+      <p class="empty-column">Nenhuma tarefa em andamento</p>
       }
     </div>
   </section>
@@ -46,18 +54,22 @@
       <h2>Concluída</h2>
     </div>
 
-    <div class="column-tasks">
+    <div class="column-tasks" cdkDropList id="completed-list" [cdkDropListData]="completedTasks$ | async"
+      [cdkDropListConnectedTo]="[
+    'pending-list',
+    'progress-list'
+  ]" (cdkDropListDropped)="drop($event, 'Concluída')">
       @for (task of completedTasks$ | async; track task.id) {
-        <article class="kanban-card">
-          <h3>{{ task.title }}</h3>
-          <p>{{ task.project }}</p>
+      <article class="kanban-card" cdkDrag [cdkDragData]="task.id">
+        <h3>{{ task.title }}</h3>
+        <p>{{ task.project }}</p>
 
-          <span class="badge">
-            {{ task.priority }}
-          </span>
-        </article>
+        <span class="badge">
+          {{ task.priority }}
+        </span>
+      </article>
       } @empty {
-        <p class="empty-column">Nenhuma tarefa concluída</p>
+      <p class="empty-column">Nenhuma tarefa concluída</p>
       }
     </div>
   </section>

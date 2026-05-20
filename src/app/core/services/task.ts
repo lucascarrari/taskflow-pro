@@ -74,4 +74,24 @@ updateTask(updatedTask: Task): void {
   this.tasksSubject.next(updatedTasks);
 }
 
+updateTaskStatus(
+  taskId: number,
+  status: 'Pendente' | 'Em andamento' | 'Concluída'
+): void {
+
+  const updatedTasks = this.tasksSubject.value.map((task) => {
+
+    if (task.id !== taskId) {
+      return task;
+    }
+
+    return {
+      ...task,
+      status
+    };
+  });
+
+  this.tasksSubject.next(updatedTasks);
+}
+
 }

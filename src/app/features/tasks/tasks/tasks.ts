@@ -9,6 +9,7 @@ import {
 
 import { TaskService } from '../../../core/services/task';
 import { combineLatest, map, startWith } from 'rxjs';
+import { ToastService } from '../../../core/services/toast';
 
 @Component({
   selector: 'app-tasks',
@@ -23,41 +24,42 @@ import { combineLatest, map, startWith } from 'rxjs';
 export class Tasks {
   private readonly taskService = inject(TaskService);
   private readonly formBuilder = inject(FormBuilder);
+  private readonly toastService = inject(ToastService);
 
   tasks$ = this.taskService.tasks$;
 
   filterForm = this.formBuilder.group({
-  search: [''],
-  priority: ['Todas'],
-  status: ['Todos']
-});
+    search: [''],
+    priority: ['Todas'],
+    status: ['Todos']
+  });
 
-filteredTasks$ = combineLatest([
-  this.tasks$,
-  this.filterForm.valueChanges.pipe(
-    startWith(this.filterForm.value)
-  )
-]).pipe(
-  map(([tasks, filters]) => {
-    const search = filters.search?.toLowerCase() ?? '';
-    const priority = filters.priority;
-    const status = filters.status;
+  filteredTasks$ = combineLatest([
+    this.tasks$,
+    this.filterForm.valueChanges.pipe(
+      startWith(this.filterForm.value)
+    )
+  ]).pipe(
+    map(([tasks, filters]) => {
+      const search = filters.search?.toLowerCase() ?? '';
+      const priority = filters.priority;
+      const status = filters.status;
 
-    return tasks.filter((task) => {
-      const matchesSearch =
-        task.title.toLowerCase().includes(search) ||
-        task.project.toLowerCase().includes(search);
+      return tasks.filter((task) => {
+        const matchesSearch =
+          task.title.toLowerCase().includes(search) ||
+          task.project.toLowerCase().includes(search);
 
-      const matchesPriority =
-        priority === 'Todas' || task.priority === priority;
+        const matchesPriority =
+          priority === 'Todas' || task.priority === priority;
 
-      const matchesStatus =
-        status === 'Todos' || task.status === status;
+        const matchesStatus =
+          status === 'Todos' || task.status === status;
 
-      return matchesSearch && matchesPriority && matchesStatus;
-    });
-  })
-);
+        return matchesSearch && matchesPriority && matchesStatus;
+      });
+    })
+  );
 
   editingTaskId: number | null = null;
   taskToDeleteId: number | null = null;
@@ -87,6 +89,10 @@ filteredTasks$ = combineLatest([
         id: this.editingTaskId,
         ...taskData
       });
+      this.toastService.show(
+        'Tarefa atualizada com sucesso',
+        'info'
+      );
 
       this.cancelEdit();
       return;
@@ -98,6 +104,11 @@ filteredTasks$ = combineLatest([
       id: currentTasks.length + 1,
       ...taskData
     });
+
+    this.toastService.show(
+      'Tarefa criada com sucesso',
+      'success'
+    );
 
     this.taskForm.reset({
       priority: 'Média',
@@ -147,7 +158,10 @@ filteredTasks$ = combineLatest([
     }
 
     this.taskService.deleteTask(this.taskToDeleteId);
-
+    this.toastService.show(
+      'Tarefa removida com sucesso',
+      'error'
+    );
     this.closeDeleteModal();
   }
 
