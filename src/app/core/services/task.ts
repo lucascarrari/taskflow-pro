@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 import { BehaviorSubject, Observable } from 'rxjs';
 
@@ -8,8 +9,10 @@ import { Task } from '../models/task.model';
   providedIn: 'root'
 })
 export class TaskService {
+  private readonly storageKey = 'taskflow_tasks';
+  private readonly platformId = inject(PLATFORM_ID);
 
-  private readonly tasksSubject = new BehaviorSubject<Task[]>([
+  private readonly defaultTasks: Task[] = [
     {
       id: 1,
       title: 'Criar tela de login',
@@ -38,7 +41,11 @@ export class TaskService {
       priority: 'Média',
       status: 'Pendente'
     }
-  ]);
+  ];
+
+  private readonly tasksSubject = new BehaviorSubject<Task[]>(
+    this.loadTasks()
+  );
 
   readonly tasks$: Observable<Task[]> =
     this.tasksSubject.asObservable();
@@ -48,50 +55,73 @@ export class TaskService {
   }
 
   addTask(task: Task): void {
-
     const currentTasks = this.tasksSubject.value;
+    const updatedTasks = [...currentTasks, task];
 
-    this.tasksSubject.next([
-      ...currentTasks,
-      task
-    ]);
+    this.updateTasks(updatedTasks);
   }
 
   deleteTask(taskId: number): void {
+    const updatedTasks = this.tasksSubject.value.filter(
+      (task) => task.id !== taskId
+    );
 
-  const updatedTasks = this.tasksSubject.value.filter(
-    (task) => task.id !== taskId
-  );
+    this.updateTasks(updatedTasks);
+  }
 
-  this.tasksSubject.next(updatedTasks);
-}
+  updateTask(updatedTask: Task): void {
+    const updatedTasks = this.tasksSubject.value.map((task) =>
+      task.id === updatedTask.id ? updatedTask : task
+    );
 
-updateTask(updatedTask: Task): void {
-  const updatedTasks = this.tasksSubject.value.map((task) =>
-    task.id === updatedTask.id ? updatedTask : task
-  );
+    this.updateTasks(updatedTasks);
+  }
 
-  this.tasksSubject.next(updatedTasks);
-}
+  updateTaskStatus(
+    taskId: number,
+    status: 'Pendente' | 'Em andamento' | 'Concluída'
+  ): void {
+    const updatedTasks = this.tasksSubject.value.map((task) => {
+      if (task.id !== taskId) {
+        return task;
+      }
 
-updateTaskStatus(
-  taskId: number,
-  status: 'Pendente' | 'Em andamento' | 'Concluída'
-): void {
+      return {
+        ...task,
+        status
+      };
+    });
 
-  const updatedTasks = this.tasksSubject.value.map((task) => {
+    this.updateTasks(updatedTasks);
+  }
 
-    if (task.id !== taskId) {
-      return task;
+  private updateTasks(tasks: Task[]): void {
+    this.tasksSubject.next(tasks);
+    this.saveTasks(tasks);
+  }
+
+  private loadTasks(): Task[] {
+    if (!isPlatformBrowser(this.platformId)) {
+      return this.defaultTasks;
     }
 
-    return {
-      ...task,
-      status
-    };
-  });
+    const storedTasks = localStorage.getItem(this.storageKey);
 
-  this.tasksSubject.next(updatedTasks);
-}
+    if (!storedTasks) {
+      return this.defaultTasks;
+    }
 
+    return JSON.parse(storedTasks) as Task[];
+  }
+
+  private saveTasks(tasks: Task[]): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    localStorage.setItem(
+      this.storageKey,
+      JSON.stringify(tasks)
+    );
+  }
 }

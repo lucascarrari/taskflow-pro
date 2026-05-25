@@ -1,10 +1,55 @@
 <header class="header">
-  <div>
+  <div class="header-title">
+    <span>Workspace</span>
     <h1>Dashboard</h1>
-    <p>Bem-vindo ao TaskFlow Pro</p>
   </div>
 
-  <button type="button" (click)="logout()">
-    Sair
-  </button>
+  <div class="header-actions">
+    <div class="search-box">
+      <lucide-icon [img]="icons.search" size="18"></lucide-icon>
+
+      <input
+        type="text"
+        placeholder="Buscar no TaskFlow..."
+        aria-label="Buscar no TaskFlow"
+      />
+    </div>
+
+    <button
+      type="button"
+      class="icon-button"
+      title="Notificações"
+    >
+      <lucide-icon [img]="icons.bell" size="18"></lucide-icon>
+    </button>
+
+    <button
+      type="button"
+      class="icon-button"
+      title="Alternar tema"
+      (click)="toggleTheme()"
+    >
+      <lucide-icon [img]="icons.moon" size="18"></lucide-icon>
+    </button>
+
+    <div class="user-card">
+      <div class="avatar">
+        <lucide-icon [img]="icons.user" size="18"></lucide-icon>
+      </div>
+
+      <div>
+        <strong>Lucas</strong>
+        <span>Admin demo</span>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="logout-button"
+      (click)="logout()"
+    >
+      <lucide-icon [img]="icons.logout" size="18"></lucide-icon>
+      <span>Sair</span>
+    </button>
+  </div>
 </header>

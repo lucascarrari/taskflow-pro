@@ -1,5 +1,18 @@
-import { Component, inject } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartConfiguration, ChartData } from 'chart.js';
+
+import {
+  CheckCircle2,
+  Clock3,
+  FolderKanban,
+  LucideAngularModule,
+  TrendingUp
+} from 'lucide-angular';
+
 import { map } from 'rxjs';
 
 import { TaskService } from '../../../core/services/task';
@@ -7,14 +20,102 @@ import { TaskService } from '../../../core/services/task';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [AsyncPipe],
+  imports: [
+    AsyncPipe,
+    BaseChartDirective,
+    LucideAngularModule,
+    RouterLink
+  ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
 export class Dashboard {
   private readonly taskService = inject(TaskService);
 
+  readonly icons = {
+    projects: FolderKanban,
+    pending: Clock3,
+    completed: CheckCircle2,
+    productivity: TrendingUp
+  };
+
   tasks$ = this.taskService.tasks$;
+
+  recentTasks$ = this.tasks$.pipe(
+    map((tasks) => tasks.slice(-5).reverse())
+  );
+
+  statusSummary$ = this.tasks$.pipe(
+    map((tasks) => {
+      const total = tasks.length || 1;
+
+      const pending = tasks.filter(
+        (task) => task.status === 'Pendente'
+      ).length;
+
+      const inProgress = tasks.filter(
+        (task) => task.status === 'Em andamento'
+      ).length;
+
+      const completed = tasks.filter(
+        (task) => task.status === 'Concluída'
+      ).length;
+
+      return {
+        pending,
+        inProgress,
+        completed,
+        pendingPercent: Math.round((pending / total) * 100),
+        inProgressPercent: Math.round((inProgress / total) * 100),
+        completedPercent: Math.round((completed / total) * 100)
+      };
+    })
+  );
+
+  readonly doughnutChartOptions: ChartConfiguration<'doughnut'>['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '68%',
+    plugins: {
+      legend: {
+        position: 'bottom'
+      }
+    }
+  };
+
+  statusChartData$ = this.tasks$.pipe(
+    map((tasks): ChartData<'doughnut'> => {
+      const pending = tasks.filter(
+        (task) => task.status === 'Pendente'
+      ).length;
+
+      const inProgress = tasks.filter(
+        (task) => task.status === 'Em andamento'
+      ).length;
+
+      const completed = tasks.filter(
+        (task) => task.status === 'Concluída'
+      ).length;
+
+      return {
+        labels: [
+          'Pendente',
+          'Em andamento',
+          'Concluída'
+        ],
+        datasets: [
+          {
+            data: [
+              pending,
+              inProgress,
+              completed
+            ],
+            borderWidth: 0
+          }
+        ]
+      };
+    })
+  );
 
   metrics$ = this.tasks$.pipe(
     map((tasks) => {
@@ -39,34 +140,49 @@ export class Dashboard {
 
       return [
         {
-          label: 'Total de Projetos',
+          label: 'Projetos',
           value: String(totalProjects),
-          description: 'Projetos ativos no sistema',
-          icon: '📁',
-          trend: 'Calculado pelas tarefas'
+          description: 'Projetos ativos',
+          icon: this.icons.projects,
+          trend: 'Baseado nas tarefas',
+          type: 'projects'
         },
         {
-          label: 'Tarefas Pendentes',
+          label: 'Pendentes',
           value: String(pendingTasks),
-          description: 'Tarefas aguardando execução',
-          icon: '⏳',
-          trend: `${pendingTasks} pendentes agora`
+          description: 'Aguardando execução',
+          icon: this.icons.pending,
+          trend: `${pendingTasks} tarefas pendentes`,
+          type: 'pending'
         },
         {
-          label: 'Tarefas Concluídas',
+          label: 'Concluídas',
           value: String(completedTasks),
-          description: 'Tarefas finalizadas',
-          icon: '✅',
-          trend: `${completedTasks} concluídas`
+          description: 'Finalizadas com sucesso',
+          icon: this.icons.completed,
+          trend: `${completedTasks} tarefas concluídas`,
+          type: 'completed'
         },
         {
           label: 'Produtividade',
           value: `${productivity}%`,
-          description: 'Média geral da equipe',
-          icon: '📈',
-          trend: `${completedTasks} de ${totalTasks} tarefas`
+          description: 'Taxa de conclusão',
+          icon: this.icons.productivity,
+          trend: `${completedTasks} de ${totalTasks} tarefas`,
+          type: 'productivity'
         }
       ];
     })
   );
+  hasTasks$ = this.tasks$.pipe(
+    map((tasks) => tasks.length > 0)
+  );
+  
+  getPriorityClass(priority: string): string {
+    return `badge priority-${priority.toLowerCase()}`;
+  }
+
+  getStatusClass(status: string): string {
+    return `badge status-${status.toLowerCase().replace(' ', '-')}`;
+  }
 }

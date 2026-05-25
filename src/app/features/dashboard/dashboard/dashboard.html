@@ -1,22 +1,36 @@
 <section class="dashboard">
+  <section class="hero-card">
+    <div>
+      <span>Visão geral</span>
+      <h2>Controle seus projetos com clareza</h2>
+      <p>
+        Acompanhe produtividade, tarefas e progresso do time em tempo real.
+      </p>
+    </div>
+
+    <div class="hero-progress">
+      <strong>TaskFlow Pro</strong>
+      <span>Workspace ativo</span>
+    </div>
+  </section>
+
   <div class="metrics-grid">
     @for (metric of metrics$ | async; track metric.label) {
-      <article class="metric-card">
-        <div class="metric-top">
-          <div class="metric-icon">{{ metric.icon }}</div>
+    <article class="metric-card" [class]="metric.type">
+      <div class="metric-icon">
+        <lucide-icon [img]="metric.icon" size="24"></lucide-icon>
+      </div>
 
-          <div>
-            <span>{{ metric.label }}</span>
-            <h2>{{ metric.value }}</h2>
-          </div>
-        </div>
-
+      <div class="metric-content">
+        <span>{{ metric.label }}</span>
+        <h2>{{ metric.value }}</h2>
         <p>{{ metric.description }}</p>
+      </div>
 
-        <div class="metric-trend">
-          {{ metric.trend }}
-        </div>
-      </article>
+      <div class="metric-trend">
+        {{ metric.trend }}
+      </div>
+    </article>
     }
   </div>
 
@@ -24,34 +38,68 @@
     <section class="panel performance-panel">
       <div class="panel-header">
         <div>
+          <span>Analytics</span>
           <h2>Desempenho da equipe</h2>
         </div>
 
-        <button type="button">Últimos 7 dias</button>
+        <button type="button" class="period-button">
+          Últimos 7 dias
+        </button>
       </div>
 
-      <div class="chart-placeholder">
-        <div class="chart-line"></div>
-        <div class="chart-labels">
-          <span>Dom</span>
-          <span>Seg</span>
-          <span>Ter</span>
-          <span>Qua</span>
-          <span>Qui</span>
-          <span>Sex</span>
-          <span>Sáb</span>
+      <div class="chart-card">
+        @if (hasTasks$ | async) {
+        @if (statusChartData$ | async; as chartData) {
+        <canvas baseChart [data]="chartData" [options]="doughnutChartOptions" [type]="'doughnut'">
+        </canvas>
+        }
+        } @else {
+        <div class="chart-empty-state">
+          <strong>Sem dados para exibir</strong>
+          <span>Crie tarefas para visualizar o gráfico de status.</span>
+        </div>
+        }
+      </div>
+      @if (statusSummary$ | async; as summary) {
+      <div class="status-summary">
+        <div>
+          <span>Pendentes</span>
+          <strong>{{ summary.pending }}</strong>
+          <div class="progress-line">
+            <i class="pending" [style.width.%]="summary.pendingPercent"></i>
+          </div>
+        </div>
+
+        <div>
+          <span>Em andamento</span>
+          <strong>{{ summary.inProgress }}</strong>
+          <div class="progress-line">
+            <i class="progress" [style.width.%]="summary.inProgressPercent"></i>
+          </div>
+        </div>
+
+        <div>
+          <span>Concluídas</span>
+          <strong>{{ summary.completed }}</strong>
+          <div class="progress-line">
+            <i class="completed" [style.width.%]="summary.completedPercent"></i>
+          </div>
         </div>
       </div>
+      }
+
     </section>
 
     <section class="panel tasks-panel">
       <div class="panel-header">
         <div>
+          <span>Atividades</span>
           <h2>Tarefas recentes</h2>
-          <p>Acompanhe as atividades mais importantes do projeto.</p>
         </div>
 
-        <button type="button">Ver todas</button>
+        <a routerLink="/tasks" class="panel-action">
+          Ver todas
+        </a>
       </div>
 
       <div class="tasks-table">
@@ -62,18 +110,28 @@
           <span>Status</span>
         </div>
 
-        @for (task of tasks$ | async; track task.id) { 
-          <div class="table-row">
-            <span>{{ task.title }}</span>
-            <span>{{ task.project }}</span>
-            <span>
-              <strong class="badge">{{ task.priority }}</strong>
-            </span>
-            <span>
-              <strong class="badge">{{ task.status }}</strong>
-            </span>
-          </div>
+        @for (task of recentTasks$ | async; track task.id) {
+        <div class="table-row">
+          <span>{{ task.title }}</span>
+          <span>{{ task.project }}</span>
+          <span>
+            <strong [class]="getPriorityClass(task.priority)">
+              {{ task.priority }}
+            </strong>
+          </span>
+          <span>
+            <strong [class]="getStatusClass(task.status)">
+              {{ task.status }}
+            </strong>
+          </span>
+        </div>
+        } @empty {
+        <div class="dashboard-empty-state">
+          <strong>Nenhuma tarefa recente</strong>
+          <span>Crie uma nova tarefa para começar a acompanhar suas atividades.</span>
+        </div>
         }
+
       </div>
     </section>
   </div>

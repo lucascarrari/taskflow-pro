@@ -1,13 +1,15 @@
 <aside class="sidebar" [class.sidebar-collapsed]="isCollapsed">
   <div class="sidebar-header">
     <div class="sidebar-logo">
+      <div class="logo-mark">
+        TF
+      </div>
+
       @if (!isCollapsed) {
         <div>
           <h2>TaskFlow</h2>
           <span>Pro</span>
         </div>
-      } @else {
-        <strong>TF</strong>
       }
     </div>
 
@@ -18,43 +20,59 @@
       [title]="isCollapsed ? 'Expandir menu' : 'Recolher menu'"
     >
       @if (isCollapsed) {
-        →
+        <lucide-icon [img]="icons.expand" size="18"></lucide-icon>
       } @else {
-        ←
+        <lucide-icon [img]="icons.collapse" size="18"></lucide-icon>
       }
     </button>
   </div>
 
   <nav class="sidebar-nav">
-    <a routerLink="/dashboard" routerLinkActive="active" title="Dashboard">
-      <span class="menu-icon">📊</span>
+    <a
+      routerLink="/dashboard"
+      routerLinkActive="active"
+      title="Dashboard"
+    >
+      <lucide-icon [img]="icons.dashboard" size="20"></lucide-icon>
 
       @if (!isCollapsed) {
-        <span class="menu-text">Dashboard</span>
+        <span>Dashboard</span>
       }
     </a>
 
-    <a routerLink="/projects" routerLinkActive="active" title="Projetos">
-      <span class="menu-icon">📁</span>
+    <a
+      routerLink="/projects"
+      routerLinkActive="active"
+      title="Projetos"
+    >
+      <lucide-icon [img]="icons.projects" size="20"></lucide-icon>
 
       @if (!isCollapsed) {
-        <span class="menu-text">Projetos</span>
+        <span>Projetos</span>
       }
     </a>
 
-    <a routerLink="/tasks" routerLinkActive="active" title="Tarefas">
-      <span class="menu-icon">✅</span>
+    <a
+      routerLink="/tasks"
+      routerLinkActive="active"
+      title="Tarefas"
+    >
+      <lucide-icon [img]="icons.tasks" size="20"></lucide-icon>
 
       @if (!isCollapsed) {
-        <span class="menu-text">Tarefas</span>
+        <span>Tarefas</span>
       }
     </a>
 
-    <a routerLink="/kanban" routerLinkActive="active" title="Kanban">
-      <span class="menu-icon">🧩</span>
+    <a
+      routerLink="/kanban"
+      routerLinkActive="active"
+      title="Kanban"
+    >
+      <lucide-icon [img]="icons.kanban" size="20"></lucide-icon>
 
       @if (!isCollapsed) {
-        <span class="menu-text">Kanban</span>
+        <span>Kanban</span>
       }
     </a>
   </nav>

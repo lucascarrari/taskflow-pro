@@ -100,8 +100,13 @@ export class Tasks {
 
     const currentTasks = this.taskService.getTasks();
 
+    const nextId =
+      currentTasks.length > 0
+        ? Math.max(...currentTasks.map((task) => task.id)) + 1
+        : 1;
+
     this.taskService.addTask({
-      id: currentTasks.length + 1,
+      id: nextId,
       ...taskData
     });
 
@@ -172,4 +177,12 @@ export class Tasks {
   getStatusClass(status: string): string {
     return `badge status-${status.toLowerCase().replace(' ', '-')}`;
   }
+
+  clearFilters(): void {
+  this.filterForm.reset({
+    search: '',
+    priority: 'Todas',
+    status: 'Todos'
+  });
+}
 }
